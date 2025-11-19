@@ -6,7 +6,7 @@ instance_type = "t3.medium"
 # IMPORTANT: Ensure this matches exactly what is shown in the AWS Console -> EC2 -> Key Pairs.
 # If your key is named "personal-chima.pem" in AWS, keep the .pem. 
 # If it is just "personal-chima", remove the .pem extension below.
-key_name = "personal-chima.pem"
+key_name = "personal-chima"
 
 tags = {
   Name = "DVWA"
