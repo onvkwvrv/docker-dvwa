@@ -8,7 +8,6 @@ set -o pipefail
 # --------------------------------------------------------------------------------------------------
 RETRIES=20
 
-
 # --------------------------------------------------------------------------------------------------
 # FUNCTIONS
 # --------------------------------------------------------------------------------------------------
@@ -25,7 +24,6 @@ retry() {
 	return 1;
 }
 
-
 # --------------------------------------------------------------------------------------------------
 # ENTRYPOINT
 # --------------------------------------------------------------------------------------------------
@@ -34,16 +32,12 @@ retry() {
 ### Installation
 ###
 
-# Install Docker
+# Install Docker (Modern script installs docker-compose-plugin automatically)
 curl -fsSL https://get.docker.com | sh
 
-# Install Docker Compose
-curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
-
 # Install git
-apt update;
-apt install -y git;
+apt-get update
+apt-get install -y git
 
 # Install docker-dvwa
 git clone https://github.com/cytopia/docker-dvwa /tmp/docker-dvwa
@@ -57,11 +51,14 @@ git clone https://github.com/cytopia/docker-dvwa /tmp/docker-dvwa
 cd /tmp/docker-dvwa
 cp .env-example .env
 echo "PHP_VERSION=${php_version}" >> .env
-echo "LISTEN_PORT=${listen_port}" >> .env
+# Note: cytopia/docker-dvwa usually listens on 80 internally.
+# We will map external port ${listen_port} to internal port 80 in the compose command.
 
 
 ###
 ### Run
 ###
 
-docker-compose up -d
+# Use the modern 'docker compose' command (Plugin)
+# Map the variable listen_port to container port 80
+LISTEN_PORT=${listen_port} docker compose up -d
