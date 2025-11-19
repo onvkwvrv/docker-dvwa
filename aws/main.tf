@@ -72,19 +72,15 @@ resource "aws_security_group" "web" {
 # EC2 instance
 # --------------------------------------------------------------------------------
 
-resource "aws_key_pair" "web" {
-  count      = length(var.public_key) > 0 ? 1 : 0
-  key_name   = "dvwa-key"
-  public_key = var.public_key
-}
+# Note: aws_key_pair resource removed as we are using an existing key
 
 data "aws_ami" "ubuntu" {
   most_recent = true
 
   filter {
     name   = "name"
-    # Updated to Ubuntu 24.04
-    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
+    # Updated to Ubuntu 22.04 LTS to support modern Docker/OpenSSL
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
   }
 
   filter {
@@ -99,9 +95,10 @@ resource "aws_instance" "web" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
 
-  key_name = length(var.public_key) > 0 ? aws_key_pair.web[0].key_name : null
+  # Use the variable for the existing key name
+  key_name = var.key_name
 
-  # CHANGE THIS LINE: Use the templatefile() function
+  # Use templatefile() function instead of data source
   user_data = templatefile("${path.module}/userdata.tpl", {
     listen_port = var.listen_port
     php_version = var.php_version
