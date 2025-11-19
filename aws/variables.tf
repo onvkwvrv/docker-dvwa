@@ -11,9 +11,9 @@ variable "php_version" {
   default     = "8.1"
 }
 
-variable "public_key" {
-  description = "SSH public key to add"
-  default     = ""
+variable "key_name" {
+  description = "Name of the existing AWS Key Pair to use (e.g., personal-chima)"
+  type        = string
 }
 
 # --------------------------------------------------------------------------------------------------
