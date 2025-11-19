@@ -94,22 +94,17 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-data "template_file" "user_data" {
-  template = file("${path.module}/userdata.tpl")
-
-  vars = {
-    listen_port = var.listen_port
-    php_version = var.php_version
-  }
-}
-
 resource "aws_instance" "web" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
 
   key_name = length(var.public_key) > 0 ? aws_key_pair.web[0].key_name : null
 
-  user_data = data.template_file.user_data.rendered
+  # CHANGE THIS LINE: Use the templatefile() function
+  user_data = templatefile("${path.module}/userdata.tpl", {
+    listen_port = var.listen_port
+    php_version = var.php_version
+  })
 
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.web.id]
